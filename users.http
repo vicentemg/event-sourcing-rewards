@@ -1,0 +1,18 @@
+@api_Host=https://localhost:7077
+
+// Get all users
+// @name getUsers
+GET {{api_Host}}/users
+Accept: application/json
+
+### 
+// Create a new user
+// @name createUser
+POST {{api_Host}}/users
+Content-Type: application/json
+
+{
+    "firstName": "John",
+    "lastName": "Doe",
+    "internal": true
+}

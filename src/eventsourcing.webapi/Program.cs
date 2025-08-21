@@ -1,8 +1,13 @@
+using Eventsourcing.WebApi.Endpoints;
+using Eventsourcing.WebApi.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services
+    .AddOpenApi()
+    .AddEventSourcing(builder.Configuration);
 
 var app = builder.Build();
 
@@ -32,6 +37,8 @@ app.MapGet("/weatherforecast", () =>
     return forecast;
 })
 .WithName("GetWeatherForecast");
+
+app.MapUserEndpoints();
 
 app.Run();
 

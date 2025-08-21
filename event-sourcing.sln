@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1-entrypoint", "1-entrypoint", "{58A5F5F2-CB74-6B77-A00C-8C6C506E0081}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eventsourcing.webpi", "src\eventsourcing.webapi\eventsourcing.webpi.csproj", "{09F84E38-BFAB-4227-8418-21B51285E3BE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eventsourcing.webapi", "src\eventsourcing.webapi\eventsourcing.webapi.csproj", "{09F84E38-BFAB-4227-8418-21B51285E3BE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2-core", "2-core", "{2B0440DA-D86D-3D00-F1BD-1B06230245C5}"
 EndProject
