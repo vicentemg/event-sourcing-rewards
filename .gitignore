@@ -1,0 +1,123 @@
+# C#
+[Bb]in/
+[Oo]bj/
+[Tt]est[Rr]esults/
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+
+# User-specific files
+*.userprefs
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+Build/
+build/
+Build/
+
+# NuGet packages
+*.nupkg
+# The packages folder can be ignored because of Package Restore
+**/packages/*
+# except build/, which is used as an MSBuild target.
+!**/packages/build/
+# Uncomment if you want to prevent NuGet packages from being checked in.
+# Nuget.exe download packages during build, so they don't need to be checked in.
+# packages/
+
+# Roslyn files
+*.ruleset
+
+# Fakes
+Generated\/
+
+# F#
+FSharp.DependencyManager.Nuget\/
+
+# Paket
+.paket/paket.exe
+paket-files/
+
+# Boo
+boo-compiler/
+
+# MonoDevelop
+*.pidb
+*.userprefs
+
+# Service Fabric
+**/ApplicationParameters/
+**/App_Data/
+**/App_Readme/
+**/Pkg/
+
+# Others
+*.[Cc]ache
+ClientBin/
+~$*
+*~
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
+*.pfx
+*.publishsettings
+node_modules/
+orleans.codegen.cs
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# TeamCity
+TeamCity.xml
+
+# DotCover
+*.dotCover
+
+# NCrunch
+_NCrunch_*
+.*crunch*.local.xml
+
+# MightyMoose
+*.mm.*
+MightyMoose.exe
+
+# SpecFlow
+*.feature.cs
+
+# Telerik Test Studio
+*.tstest
+
+# TestComplete
+*.pjs
+*.tcproj
+
+# AppVeyor
+appveyor.yml
+
+# StyleCop
+StyleCop.Cache
+
+# Coverlet
+coverage.json
+coverage.cobertura.xml
+
+# VS Code
+.vscode/
+
+# Docker
+.devcontainer/.volume
+.devcontainer/volume
+.env
