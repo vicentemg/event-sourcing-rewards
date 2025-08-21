@@ -3,28 +3,18 @@
 {
 	"name": "C# (.NET) and PostgreSQL",
 	"dockerComposeFile": "docker-compose.yml",
-	"service": "app",
+	"service": "rewards-api",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	"features": {
-		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
-		"ghcr.io/localstack/devcontainer-feature/localstack-cli:latest": {
-			"version": "latest",
-			"awslocal": true, // if true, add in features manually: ghcr.io/devcontainers/features/aws-cli
-			"cdklocal": false, // if true, add in features manually: ghcr.io/devcontainers-contrib/features/aws-cdk
-			"pulumilocal": false, // if true, add in features manually: ghcr.io/devcontainers-contrib/features/pulumi
-			"samlocal": false, // if true, add in features manually: ghcr.io/customink/codespaces-features/sam-cli
-			"tflocal": true // if true, add in features manually: ghcr.io/devcontainers-contrib/features/terraform-asdf
-		},
-		"ghcr.io/devcontainers-extra/features/terraform-asdf": {},
-		"ghcr.io/devcontainers/features/aws-cli:1": {}
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
 	},
 	"customizations": {
 		"vscode": {
 			"extensions": [
 				"ms-dotnettools.csdevkit",
 				"humao.rest-client",
-				"HashiCorp.terraform",
-				"saoudrizwan.claude-dev"
+				"saoudrizwan.claude-dev",
+				"cweijan.vscode-postgresql-client2"
 			]
 		}
 	},
@@ -34,16 +24,13 @@
 	// "customizations": {},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [
-		5000,
-		5001,
-		"localstack:5432",
-		"localstack:4566"
+		"postgres:5432"
 	],
 	"portsAttributes": {
-		"5001": {
-			"protocol": "https"
+		"5008": {
+			"protocol": "http"
 		},
-		"4566": {
+		"7077": {
 			"protocol": "https"
 		}
 	},

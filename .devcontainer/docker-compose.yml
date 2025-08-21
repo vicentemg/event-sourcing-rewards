@@ -1,5 +1,5 @@
 services:
-  app:
+  rewards-api:
     build:
       context: .
       dockerfile: Dockerfile
@@ -9,10 +9,8 @@ services:
       - ~/.bashrc:/home/vscode/.bashrc:cached
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
-    env_file:
-      - .env
-    # Use the same network as the localstack service
-    network_mode: service:localstack  
+    networks:
+      - default  
 
     # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
     # Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
@@ -30,28 +28,16 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
-      
+    networks:
+      - default
+
     # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
     # (Adding the "ports" property to this file will not forward from a Codespace.)
-  localstack:
-    image: localstack/localstack-pro:latest  # required for Pro
-    ports:
-      - "4566:4566"            # LocalStack Gateway (exposed to all interfaces)
-      - "4510-4559:4510-4559"  # external services port range (exposed to all interfaces)
-    env_file:
-      - .env
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
-      - "./.volume:/var/lib/localstack"
-
-  mysql:
-    image: quay.io/debezium/example-mysql:2.7
-    ports:
-      - "3306:3306"
-    environment:
-      - MYSQL_ROOT_PASSWORD=debezium
-      - MYSQL_USER=mysqluser
-      - MYSQL_PASSWORD=mysqlpw
 
 volumes:
   postgres-data:
+
+networks:
+  default:
+    name: devcontainer_default
+    driver: bridge
