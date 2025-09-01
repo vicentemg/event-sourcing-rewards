@@ -1,6 +1,0 @@
-@eventsourcing.webpi_HostAddress = http://localhost:5008
-
-GET {{eventsourcing.webpi_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

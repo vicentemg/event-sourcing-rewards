@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ItemGroup Condition="$(MSBuildProjectName.EndsWith('webapi'))">
+
+  <ItemGroup Condition="$(MSBuildProjectName.EndsWith('WebApi'))">
     <PackageReference Include="Marten" Version="8.8.2" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.7" />
   </ItemGroup>
+
+  <ItemGroup Condition="$(MSBuildProjectName.EndsWith('Application'))">
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.8" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(MSBuildProjectName.EndsWith('Infrastructure'))">
+    <PackageReference Include="Marten" Version="8.8.2" />
+  </ItemGroup>
+
+
 </Project>

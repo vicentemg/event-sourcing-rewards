@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <DomainPath>$(MSBuildThisFileDirectory)\src\*Domain\*.csproj</DomainPath>
+    <ApplicationPath>$(MSBuildThisFileDirectory)\src\*Application\*.csproj</ApplicationPath>
+    <Infrastructurepath>$(MSBuildThisFileDirectory)\src\*Infrastructure\*.csproj</Infrastructurepath>
+  </PropertyGroup>
+
+  <ItemGroup Condition="$(MSBuildProjectName.EndsWith('WebApi'))">
+    <ProjectReference Include="$(ApplicationPath)" />
+    <ProjectReference Include="$(Infrastructurepath)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(MSBuildProjectName.EndsWith('Application'))">
+    <ProjectReference Include="$(DomainPath)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(MSBuildProjectName.EndsWith('Infrastructure'))">
+    <ProjectReference Include="$(ApplicationPath)" />
+  </ItemGroup>
+
+</Project>
