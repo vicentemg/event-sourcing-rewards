@@ -5,6 +5,8 @@ using Repositories;
 using global::Marten;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using EventSourcing.Infrastructure.Marten.Projections;
+using EventSourcing.Infrastructure.Marten.Events;
 
 public static class MartenRegistry
 {
@@ -12,14 +14,14 @@ public static class MartenRegistry
     {
         services
             .AddScoped(typeof(IRepository<>), typeof(MartenRepository<>))
-            .AddMarten(_ =>
+            .AddMarten(opts =>
             {
                 var connectionString = configuration.GetConnectionString("postgres")!;
+                opts.Connection(connectionString);
 
-                _.Connection(connectionString);
-
-                // this is the default behavior
-                // opts.Projections.LiveStreamAggregation<Party>();
+                _ = opts
+                    .AddMartenEventTypes()
+                    .AddMartenProjections();
 
             }).UseLightweightSessions();
 

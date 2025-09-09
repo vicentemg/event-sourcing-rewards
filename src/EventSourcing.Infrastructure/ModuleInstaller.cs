@@ -1,5 +1,6 @@
 namespace EventSourcing.Infrastructure;
 
+using EventSourcing.Infrastructure.Marten;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 public static class ModuleInstaller

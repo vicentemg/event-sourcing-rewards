@@ -2,11 +2,17 @@ namespace EventSourcing.Domain.Seedwork;
 
 using System.Collections.Generic;
 
-public abstract class AggregateRoot
+public interface IAggregateRoot
+{
+    // Marker interface, no members required
+}
+
+public abstract class AggregateRoot : IAggregateRoot
 {
     private readonly List<object> uncommittedEvents = [];
 
     public Guid Id { get; protected set; }
+
     public int Version { get; protected set; }
 
     public object[] GetUncommittedEvents()

@@ -5,21 +5,27 @@ using EventSourcing.Domain.Seedwork;
 
 public class Account : AggregateRoot
 {
+    public Account() { }
+    public Account(Guid id) => this.Id = id;
+
     public Guid PartyId { get; private set; }
     public decimal Balance { get; private set; }
     public AccountStatus Status { get; private set; }
 
-    private Account() { }
 
-    public static Result<Account> Create(Guid partyId, decimal initialBalance = 0)
+    public static Result<Account> Create(Guid accountId, Guid partyId, decimal initialBalance = 0)
     {
         if (initialBalance < 0)
         {
             return Result.Fail<Account>("Initial balance cannot be negative.");
         }
 
-        var account = new Account();
-        account.RaiseEvent(new AccountCreated(Guid.NewGuid(), partyId, DateTime.UtcNow));
+        var account = new Account(accountId)
+        {
+            PartyId = partyId
+        };
+
+        account.RaiseEvent(new AccountCreated(Guid.NewGuid(), accountId, DateTime.UtcNow));
 
         if (initialBalance > 0)
         {

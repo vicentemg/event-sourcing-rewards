@@ -5,6 +5,7 @@ using EventSourcing.Application;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
+    .AddLogging()
     .AddOpenApi()
     .AddApplication()
     .AddInfrastructure(builder.Configuration);

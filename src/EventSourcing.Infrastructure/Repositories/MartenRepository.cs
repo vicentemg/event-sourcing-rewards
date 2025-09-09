@@ -11,12 +11,12 @@ public class MartenRepository<T>(IDocumentSession session) : IRepository<T> wher
     public async Task<T?> GetAsync(Guid id, CancellationToken cancellationToken = default)
         => await this.session.Events.AggregateStreamAsync<T>(id, token: cancellationToken);
 
-    public Task SaveAsync(T aggregate, CancellationToken cancellationToken = default)
+    public async Task SaveAsync(T aggregate, CancellationToken cancellationToken = default)
     {
         var uncommittedEvents = aggregate.GetUncommittedEvents();
         if (uncommittedEvents.Length == 0)
         {
-            return Task.CompletedTask;
+            return;
         }
 
         var expectedVersion = aggregate.Version - uncommittedEvents.Length;
@@ -35,7 +35,8 @@ public class MartenRepository<T>(IDocumentSession session) : IRepository<T> wher
         // Important! The repository is also responsible for clearing the uncommitted events.
         aggregate.MarkEventsAsCommitted();
 
-        return Task.CompletedTask;
+        await this.session.SaveChangesAsync(cancellationToken);
+
     }
 
 }

@@ -1,18 +1,22 @@
 @api_Host=https://localhost:7077
 
-// Get all users
-// @name getUsers
-GET {{api_Host}}/users
-Accept: application/json
-
-### 
-// Create a new user
-// @name createUser
-POST {{api_Host}}/users
+###
+// Create a new party
+// @name createParty
+POST {{api_Host}}/parties
 Content-Type: application/json
 
 {
-    "firstName": "John",
-    "lastName": "Doe",
-    "internal": true
+    "name": "Sample Party",
+    "type": "Birthday",
+    "email": "some@emai.com"
 }
+
+
+###
+// Get a party by ID
+// @name getPartyById
+
+GET {{api_Host}}/parties/{{createParty.response.body.id}}
+Accept: application/json
+
