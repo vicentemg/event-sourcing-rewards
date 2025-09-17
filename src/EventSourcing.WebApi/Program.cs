@@ -20,5 +20,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapPartyEndpoints();
+app.MapAccountEndpoints();
 
 app.Run();

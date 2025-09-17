@@ -12,7 +12,8 @@ public interface ICreatePartyCommandHandler
     public Task<Result<Guid>> Handle(CreatePartyCommand command, CancellationToken cancellationToken = default);
 }
 
-public class CreatePartyCommandHandler(IRepository<Party> repository, ILogger<CreatePartyCommandHandler> logger) : ICreatePartyCommandHandler
+public class CreatePartyCommandHandler(IRepository<Party> repository,
+                                       ILogger<CreatePartyCommandHandler> logger) : ICreatePartyCommandHandler
 {
     private static readonly Action<ILogger, string, string, Exception?> LogHandlingCreatePartyCommand =
         LoggerMessage.Define<string, string>(
@@ -36,7 +37,7 @@ public class CreatePartyCommandHandler(IRepository<Party> repository, ILogger<Cr
     {
         LogHandlingCreatePartyCommand(logger, command.Name, command.Email, null);
 
-        var result = Party.Create(command.Name, command.Email);
+        var result = Party.Create(Guid.NewGuid(), command.Name, command.Email);
 
         if (result.IsFailure)
         {

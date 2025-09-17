@@ -9,54 +9,44 @@ public class Account : AggregateRoot
     public Account(Guid id) => this.Id = id;
 
     public Guid PartyId { get; private set; }
-    public decimal Balance { get; private set; }
+    public Money Balance { get; private set; }
+    public Money Debt { get; private set; }
     public AccountStatus Status { get; private set; }
 
 
-    public static Result<Account> Create(Guid accountId, Guid partyId, decimal initialBalance = 0)
+    public static Result<Account> Create(Guid accountId, Guid partyId, Money initialBalance)
     {
-        if (initialBalance < 0)
-        {
-            return Result.Fail<Account>("Initial balance cannot be negative.");
-        }
-
         var account = new Account(accountId)
         {
-            PartyId = partyId
+            PartyId = partyId,
+            Balance = Money.Create(0).Value,
+            Debt = Money.Create(0).Value
         };
 
-        account.RaiseEvent(new AccountCreated(Guid.NewGuid(), accountId, DateTime.UtcNow));
+        account.RaiseEvent(new AccountCreated(accountId, partyId, DateTime.UtcNow));
 
-        if (initialBalance > 0)
+        if (initialBalance.Amount > 0)
         {
-            account.RaiseEvent(new FundsDeposited(account.Id, initialBalance, DateTime.UtcNow));
+            account.RaiseEvent(new FundsDeposited(account.Id, initialBalance, new Merchant("System", VendorType.Other), DateTime.UtcNow));
         }
 
         return Result.Ok(account);
     }
 
-    public Result Deposit(decimal amount)
+    public Result Deposit(Money amount, Merchant merchant)
     {
-        if (amount <= 0)
-        {
-            return Result.Fail("Deposit amount must be positive.");
-        }
         if (this.Status == AccountStatus.Closed)
         {
             return Result.Fail("Cannot deposit funds into a closed account.");
         }
 
-        this.RaiseEvent(new FundsDeposited(this.Id, amount, DateTime.UtcNow));
+        this.RaiseEvent(new FundsDeposited(this.Id, amount, merchant, DateTime.UtcNow));
         return Result.Ok();
     }
 
-    public Result Withdraw(decimal amount)
+    public Result Withdraw(Money amount, Merchant merchant)
     {
-        if (amount <= 0)
-        {
-            return Result.Fail("Withdrawal amount must be positive.");
-        }
-        if (this.Balance < amount)
+        if (this.Balance.Amount < amount.Amount)
         {
             return Result.Fail("Insufficient funds.");
         }
@@ -65,28 +55,35 @@ public class Account : AggregateRoot
             return Result.Fail("Account is not active.");
         }
 
-        this.RaiseEvent(new FundsWithdrawn(this.Id, amount, DateTime.UtcNow));
+        this.RaiseEvent(new FundsWithdrawn(this.Id, amount, merchant, DateTime.UtcNow));
         return Result.Ok();
     }
 
-    // The Apply methods are private and are called via dynamic dispatch from the AggregateRoot.
-    // This is a convention for applying events to the aggregate's state.
-    private void Apply(AccountCreated e)
+    public Result IncurDebt(Money amount, Merchant merchant)
+    {
+        if (this.Status != AccountStatus.Active)
+        {
+            return Result.Fail("Account is not active.");
+        }
+
+        this.RaiseEvent(new DebtIncurred(this.Id, amount, merchant, DateTime.UtcNow));
+        return Result.Ok();
+    }
+
+    internal void Apply(AccountCreated e)
     {
         this.Id = e.AccountId;
         this.PartyId = e.PartyId;
-        this.Balance = 0;
+        this.Balance = Money.Create(0).Value;
+        this.Debt = Money.Create(0).Value;
         this.Status = AccountStatus.Active;
     }
 
-    private void Apply(FundsDeposited e) => this.Balance += e.Amount;
+    internal void Apply(FundsDeposited e) => this.Balance += e.Amount;
 
-    private void Apply(FundsWithdrawn e) => this.Balance -= e.Amount;
+    internal void Apply(FundsWithdrawn e) => this.Balance -= e.Amount;
 
-    private void Apply(object _)
-    {
-        // Fallback for any unhandled events.
-    }
+    internal void Apply(DebtIncurred e) => this.Debt += e.Amount;
 }
 
 public enum AccountStatus
