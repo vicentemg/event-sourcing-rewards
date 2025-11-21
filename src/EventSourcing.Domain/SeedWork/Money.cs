@@ -1,7 +1,5 @@
 namespace EventSourcing.Domain.Seedwork;
 
-using EventSourcing.Domain.Seedwork;
-
 public record Money
 {
     public decimal Amount { get; }
