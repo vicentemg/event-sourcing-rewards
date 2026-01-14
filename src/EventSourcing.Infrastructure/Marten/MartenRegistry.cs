@@ -12,8 +12,8 @@ public static class MartenRegistry
 {
     public static IServiceCollection RegisterMarten(this IServiceCollection services, IConfiguration configuration)
     {
-        services
-            .AddScoped(typeof(IRepository<>), typeof(MartenRepository<>))
+        _ = services
+            .AddScoped(typeof(IAggregateRepository<>), typeof(AggregateRepository<>))
             .AddMarten(opts =>
             {
                 var connectionString = configuration.GetConnectionString("postgres")!;

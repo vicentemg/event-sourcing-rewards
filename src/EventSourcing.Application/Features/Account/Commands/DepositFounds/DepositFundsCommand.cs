@@ -1,4 +1,4 @@
-namespace EventSourcing.Application.Features.Account.Commands;
+namespace EventSourcing.Application.Features.Account.Commands.DepositFunds;
 
 using EventSourcing.Domain.Aggregates.AccountAggregate;
 using EventSourcing.Domain.Seedwork;
@@ -13,7 +13,7 @@ public interface IDepositFundsCommandHandler
     public Task<Result> Handle(DepositFundsCommand command, CancellationToken cancellationToken = default);
 }
 
-public class DepositFundsCommandHandler(IRepository<Account> repository, ILogger<DepositFundsCommandHandler> logger) : IDepositFundsCommandHandler
+public class DepositFundsCommandHandler(IAggregateRepository<Account> repository, ILogger<DepositFundsCommandHandler> logger) : IDepositFundsCommandHandler
 {
     private static readonly Action<ILogger, Guid, decimal, Exception?> LogHandlingDepositFundsCommand =
         LoggerMessage.Define<Guid, decimal>(
@@ -43,7 +43,7 @@ public class DepositFundsCommandHandler(IRepository<Account> repository, ILogger
     {
         LogHandlingDepositFundsCommand(logger, command.AccountId, command.Amount, null);
 
-        var account = await repository.GetAsync(command.AccountId, cancellationToken);
+        var account = await repository.LoadAsync(command.AccountId, cancellationToken);
         if (account is null)
         {
             LogAccountNotFound(logger, command.AccountId, null);

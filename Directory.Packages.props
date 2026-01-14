@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
-  <ItemGroup Condition="$(MSBuildProjectName.EndsWith('WebApi'))">
-    <PackageReference Include="Marten" Version="8.8.2" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.7" />
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Marten" Version="8.8.2" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.7" />
+    <PackageVersion Include="coverlet.collector" Version="6.0.2" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageVersion Include="Polly" Version="8.6.5" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.12.4" />
+    <PackageVersion Include="Scrutor" Version="7.0.0" />
+    <PackageVersion Include="xunit" Version="2.9.2" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
   </ItemGroup>
-
-  <ItemGroup Condition="$(MSBuildProjectName.EndsWith('Application'))">
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.8" />
-  </ItemGroup>
-
-  <ItemGroup Condition="$(MSBuildProjectName.EndsWith('Infrastructure'))">
-    <PackageReference Include="Marten" Version="8.8.2" />
-  </ItemGroup>
-
-
 </Project>

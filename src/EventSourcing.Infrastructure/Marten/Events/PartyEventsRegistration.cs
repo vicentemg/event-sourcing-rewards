@@ -6,6 +6,8 @@ using EventSourcing.Domain.Aggregates.PartyAggregate.Events;
 public class PartyEventsRegistration : IMartenEventTypeRegistration
 {
     public void Register(StoreOptions options)
-        => _ = options.Events
-                .AddEventType<PartyCreated>();
+    {
+        _ = options.Events
+                    .AddEventType<PartyCreated>();
+    }
 }

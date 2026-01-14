@@ -1,4 +1,4 @@
-namespace EventSourcing.Application.Features.Account.Commands;
+namespace EventSourcing.Application.Features.Account.Commands.IncurDebt;
 
 using EventSourcing.Domain.Aggregates.AccountAggregate;
 using EventSourcing.Domain.Seedwork;
@@ -13,7 +13,7 @@ public interface IIncurDebtCommandHandler
     public Task<Result> Handle(IncurDebtCommand command, CancellationToken cancellationToken = default);
 }
 
-public class IncurDebtCommandHandler(IRepository<Account> repository, ILogger<IncurDebtCommandHandler> logger) : IIncurDebtCommandHandler
+public class IncurDebtCommandHandler(IAggregateRepository<Account> repository, ILogger<IncurDebtCommandHandler> logger) : IIncurDebtCommandHandler
 {
     private static readonly Action<ILogger, Guid, decimal, Exception?> LogHandlingIncurDebtCommand =
         LoggerMessage.Define<Guid, decimal>(
@@ -43,7 +43,7 @@ public class IncurDebtCommandHandler(IRepository<Account> repository, ILogger<In
     {
         LogHandlingIncurDebtCommand(logger, command.AccountId, command.Amount, null);
 
-        var account = await repository.GetAsync(command.AccountId, cancellationToken);
+        var account = await repository.LoadAsync(command.AccountId, cancellationToken);
         if (account is null)
         {
             LogAccountNotFound(logger, command.AccountId, null);

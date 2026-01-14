@@ -1,44 +1,69 @@
 namespace EventSourcing.WebApi.Endpoints;
 
 using System.Threading.Tasks;
-using EventSourcing.Application.Features.Account.Commands;
-using EventSourcing.Application.Features.Account.Queries;
+using EventSourcing.Application.Features.Account.Queries.GetAccount;
+using EventSourcing.Application.Features.Account.Queries.GetAccounts;
 using EventSourcing.Domain.Aggregates.AccountAggregate;
+using EventSourcing.WebApi.Endpoints.Contracts.Responses;
 using Microsoft.AspNetCore.Mvc;
+using EventSourcing.Application.Features.Account.Commands.CreateAccount;
+using EventSourcing.Application.Features.Account.Commands.DepositFunds;
+using EventSourcing.Application.Features.Account.Commands.IncurDebt;
+using EventSourcing.Application.Features.Account.Commands.MakePayment;
+using EventSourcing.Application.Features.Account.Commands.WithdrawFunds;
 
 public static class AccountEndpoints
 {
     public static void MapAccountEndpoints(this WebApplication app)
     {
-        app
+        _ = app
+        .MapGet("/accounts", GetAccountsAsync)
+        .WithName("GetAccounts")
+        .Produces<AccountResponse[]>(StatusCodes.Status200OK);
+
+        _ = app
         .MapGet("/accounts/{id}", GetAccountByIdAsync)
         .WithName("GetAccount")
-        .Produces<AccountDto>(StatusCodes.Status200OK);
+        .Produces<AccountResponse>(StatusCodes.Status200OK);
 
-        app
+        _ = app
         .MapPost("/accounts", CreateAccountAsync)
         .WithName("CreateAccount")
         .Produces(StatusCodes.Status201Created);
 
-        app
+        _ = app
         .MapPost("/accounts/{id}/deposit", DepositFundsAsync)
         .WithName("DepositFunds")
         .Produces(StatusCodes.Status200OK);
 
-        app
+        _ = app
         .MapPost("/accounts/{id}/withdraw", WithdrawFundsAsync)
         .WithName("WithdrawFunds")
         .Produces(StatusCodes.Status200OK);
 
-        app
+        _ = app
         .MapPost("/accounts/{id}/incur-debt", IncurDebtAsync)
         .WithName("IncurDebt")
         .Produces(StatusCodes.Status200OK);
 
-        app
+        _ = app
         .MapPost("/accounts/{id}/payment", MakePaymentAsync)
         .WithName("MakePayment")
         .Produces(StatusCodes.Status200OK);
+    }
+
+    internal static async Task<IResult> GetAccountsAsync([FromServices] IGetAccountsQueryHandler handler, CancellationToken cancellationToken)
+    {
+        var result = await handler.Handle(new GetAccountsQuery(), cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return Results.NotFound(result.Error);
+        }
+
+        var response = result.Value.Select(a => (AccountResponse)a).ToList();
+
+        return Results.Ok(response);
     }
 
     internal static async Task<IResult> GetAccountByIdAsync(Guid id, [FromServices] IGetAccountQueryHandler handler, CancellationToken cancellationToken)
@@ -50,7 +75,7 @@ public static class AccountEndpoints
             return Results.NotFound(result.Error);
         }
 
-        return Results.Ok(result.Value);
+        return Results.Ok((AccountResponse)result.Value);
     }
 
     internal static async Task<IResult> CreateAccountAsync([FromBody] CreateAccountRequest request, [FromServices] ICreateAccountCommandHandler handler)

@@ -1,4 +1,4 @@
-namespace EventSourcing.Application.Features.Account.Commands;
+namespace EventSourcing.Application.Features.Account.Commands.MakePayment;
 
 using EventSourcing.Domain.Aggregates.AccountAggregate;
 using EventSourcing.Domain.Seedwork;
@@ -13,7 +13,7 @@ public interface IMakePaymentCommandHandler
     public Task<Result> Handle(MakePaymentCommand command, CancellationToken cancellationToken = default);
 }
 
-public class MakePaymentCommandHandler(IRepository<Account> repository, ILogger<MakePaymentCommandHandler> logger) : IMakePaymentCommandHandler
+public class MakePaymentCommandHandler(IAggregateRepository<Account> repository, ILogger<MakePaymentCommandHandler> logger) : IMakePaymentCommandHandler
 {
     private static readonly Action<ILogger, Guid, decimal, Exception?> LogHandlingMakePaymentCommand =
         LoggerMessage.Define<Guid, decimal>(
@@ -78,7 +78,7 @@ public class MakePaymentCommandHandler(IRepository<Account> repository, ILogger<
 
     private async Task<Result<Account>> GetAccountAsync(Guid accountId, CancellationToken cancellationToken)
     {
-        var account = await repository.GetAsync(accountId, cancellationToken);
+        var account = await repository.LoadAsync(accountId, cancellationToken);
         if (account is null)
         {
             LogAccountNotFound(logger, accountId, null);

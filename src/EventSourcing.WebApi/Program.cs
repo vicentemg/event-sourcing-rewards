@@ -1,6 +1,7 @@
 using EventSourcing.WebApi.Endpoints;
 using EventSourcing.Infrastructure;
 using EventSourcing.Application;
+using EventSourcing.WebApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,8 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    _ = app.MapOpenApi();
+    _ = app.MapScalarConfig();
 }
 
 app.UseHttpsRedirection();

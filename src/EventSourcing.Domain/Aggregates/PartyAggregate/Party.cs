@@ -11,9 +11,9 @@ public class Party : AggregateRoot
     public Party() { }
     public Party(Guid id, string name, string email)
     {
-        this.Id = id;
-        this.Name = name;
-        this.Email = email;
+        Id = id;
+        Name = name;
+        Email = email;
     }
 
     public string Name { get; private set; } = null!;
@@ -37,10 +37,10 @@ public class Party : AggregateRoot
         return Result.Ok(party);
     }
 
-    internal void Apply(PartyCreated e)
+    public void Apply(PartyCreated e)
     {
-        this.Id = e.PartyId;
-        this.Name = e.Name;
-        this.Email = e.Email;
+        Id = e.PartyId;
+        Name = e.Name;
+        Email = e.Email;
     }
 }

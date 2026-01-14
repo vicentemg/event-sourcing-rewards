@@ -15,7 +15,7 @@ public interface IGetPartyQueryHandler
     public Task<Result<PartyDto>> Handle(GetPartyQuery query, CancellationToken cancellationToken);
 }
 
-public class GetPartyQueryHandler(IRepository<Party> repository, ILogger<GetPartyQueryHandler> logger) : IGetPartyQueryHandler
+public class GetPartyQueryHandler(IAggregateRepository<Party> repository, ILogger<GetPartyQueryHandler> logger) : IGetPartyQueryHandler
 {
     private static readonly Action<ILogger, Guid, Exception?> PartyNotFound =
         LoggerMessage.Define<Guid>(LogLevel.Warning, new EventId(1, nameof(PartyNotFound)), "Party with ID {PartyId} not found.");
@@ -27,7 +27,7 @@ public class GetPartyQueryHandler(IRepository<Party> repository, ILogger<GetPart
     {
         HandlingGetPartyQuery(logger, query.PartyId, null);
 
-        var party = await repository.GetAsync(query.PartyId, cancellationToken);
+        var party = await repository.LoadAsync(query.PartyId, cancellationToken);
         if (party is null)
         {
             PartyNotFound(logger, query.PartyId, null);

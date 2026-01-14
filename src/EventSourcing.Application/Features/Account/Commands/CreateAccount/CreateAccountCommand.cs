@@ -1,7 +1,8 @@
-namespace EventSourcing.Application.Features.Account.Commands;
+namespace EventSourcing.Application.Features.Account.Commands.CreateAccount;
 
 using EventSourcing.Domain.Aggregates.AccountAggregate;
 using EventSourcing.Domain.Seedwork;
+using EventSourcing.Application.SeedWork;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
@@ -9,15 +10,10 @@ using Party = Domain.Aggregates.PartyAggregate.Party;
 
 public record CreateAccountCommand(Guid Id, Guid PartyId, decimal InitialBalance);
 
-public interface ICreateAccountCommandHandler
-{
-    public Task<Result<Guid>> Handle(CreateAccountCommand command, CancellationToken cancellationToken = default);
-}
-
 public class CreateAccountCommandHandler(
-    IRepository<Account> repository,
-    IRepository<Party> partyRepository,
-    ILogger<CreateAccountCommandHandler> logger) : ICreateAccountCommandHandler
+    IAggregateRepository<Account> repository,
+    IAggregateRepository<Party> partyRepository,
+    ILogger<CreateAccountCommandHandler> logger) : ICommandHandler<CreateAccountCommand, Guid>
 {
     private static readonly Action<ILogger, Guid, Guid, decimal, Exception?> LogHandlingCreateAccountCommand =
         LoggerMessage.Define<Guid, Guid, decimal>(
@@ -47,7 +43,7 @@ public class CreateAccountCommandHandler(
     {
         LogHandlingCreateAccountCommand(logger, command.Id, command.PartyId, command.InitialBalance, null);
 
-        var party = await partyRepository.GetAsync(command.PartyId, cancellationToken);
+        var party = await partyRepository.LoadAsync(command.PartyId, cancellationToken);
         if (party is null)
         {
             LogPartyNotFound(logger, command.PartyId, null);

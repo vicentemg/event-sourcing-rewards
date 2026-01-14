@@ -10,12 +10,12 @@ public static class PartyEndpoints
 {
     public static void MapPartyEndpoints(this WebApplication app)
     {
-        app
+        _ = app
         .MapGet("/parties/{id}", GetPartyByIdAsync)
         .WithName("GetParty")
         .Produces<List<Party>>(StatusCodes.Status200OK);
 
-        app
+        _ = app
         .MapPost("/parties", CreatePartyAsync)
         .WithName("CreateParty")
         .Produces<Party>(StatusCodes.Status201Created);

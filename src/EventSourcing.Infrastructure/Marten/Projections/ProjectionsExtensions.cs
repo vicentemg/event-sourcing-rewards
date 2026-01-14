@@ -13,7 +13,8 @@ public static class ProjectionsExtensions
             .GetTypes()
             .Where(t => projectionType.IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract)
             .Select(t => Activator.CreateInstance(t) as IMartenProjection)
-            .Where(p => p != null);
+            .Where(p => p != null)
+            .ToList();
 
         foreach (var projection in projections)
         {

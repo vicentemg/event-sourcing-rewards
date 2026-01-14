@@ -1,4 +1,5 @@
 @api_Host=https://localhost:7077
+@randomId = {{$random.integer(1000, 9999)}}
 
 ###
 // Create a new party
@@ -7,9 +8,9 @@ POST {{api_Host}}/parties
 Content-Type: application/json
 
 {
-    "name": "Sample Party",
+    "name": "Sample Party {{randomId}}",
     "type": "Birthday",
-    "email": "some@emai.com"
+    "email": "some{{randomId}}@emai.com"
 }
 
 

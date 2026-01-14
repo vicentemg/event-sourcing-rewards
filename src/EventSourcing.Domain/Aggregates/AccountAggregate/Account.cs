@@ -6,7 +6,10 @@ using EventSourcing.Domain.Seedwork;
 public class Account : AggregateRoot
 {
     public Account() { }
-    public Account(Guid id) => this.Id = id;
+    public Account(Guid id)
+    {
+        Id = id;
+    }
 
     public Guid PartyId { get; private set; }
     public Money Balance { get; private set; }
@@ -35,55 +38,64 @@ public class Account : AggregateRoot
 
     public Result Deposit(Money amount, Merchant merchant)
     {
-        if (this.Status == AccountStatus.Closed)
+        if (Status == AccountStatus.Closed)
         {
             return Result.Fail("Cannot deposit funds into a closed account.");
         }
 
-        this.RaiseEvent(new FundsDeposited(this.Id, amount, merchant, DateTime.UtcNow));
+        RaiseEvent(new FundsDeposited(Id, amount, merchant, DateTime.UtcNow));
         return Result.Ok();
     }
 
     public Result Withdraw(Money amount, Merchant merchant)
     {
-        if (this.Balance.Amount < amount.Amount)
+        if (Balance.Amount < amount.Amount)
         {
             return Result.Fail("Insufficient funds.");
         }
-        if (this.Status != AccountStatus.Active)
+        if (Status != AccountStatus.Active)
         {
             return Result.Fail("Account is not active.");
         }
 
-        this.RaiseEvent(new FundsWithdrawn(this.Id, amount, merchant, DateTime.UtcNow));
+        RaiseEvent(new FundsWithdrawn(Id, amount, merchant, DateTime.UtcNow));
         return Result.Ok();
     }
 
     public Result IncurDebt(Money amount, Merchant merchant)
     {
-        if (this.Status != AccountStatus.Active)
+        if (Status != AccountStatus.Active)
         {
             return Result.Fail("Account is not active.");
         }
 
-        this.RaiseEvent(new DebtIncurred(this.Id, amount, merchant, DateTime.UtcNow));
+        RaiseEvent(new DebtIncurred(Id, amount, merchant, DateTime.UtcNow));
         return Result.Ok();
     }
 
     internal void Apply(AccountCreated e)
     {
-        this.Id = e.AccountId;
-        this.PartyId = e.PartyId;
-        this.Balance = Money.Create(0).Value;
-        this.Debt = Money.Create(0).Value;
-        this.Status = AccountStatus.Active;
+        Id = e.AccountId;
+        PartyId = e.PartyId;
+        Balance = Money.Create(0).Value;
+        Debt = Money.Create(0).Value;
+        Status = AccountStatus.Active;
     }
 
-    internal void Apply(FundsDeposited e) => this.Balance += e.Amount;
+    internal void Apply(FundsDeposited e)
+    {
+        Balance += e.Amount;
+    }
 
-    internal void Apply(FundsWithdrawn e) => this.Balance -= e.Amount;
+    internal void Apply(FundsWithdrawn e)
+    {
+        Balance -= e.Amount;
+    }
 
-    internal void Apply(DebtIncurred e) => this.Debt += e.Amount;
+    internal void Apply(DebtIncurred e)
+    {
+        Debt += e.Amount;
+    }
 }
 
 public enum AccountStatus

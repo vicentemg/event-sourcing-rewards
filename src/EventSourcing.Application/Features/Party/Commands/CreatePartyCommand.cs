@@ -12,7 +12,7 @@ public interface ICreatePartyCommandHandler
     public Task<Result<Guid>> Handle(CreatePartyCommand command, CancellationToken cancellationToken = default);
 }
 
-public class CreatePartyCommandHandler(IRepository<Party> repository,
+public class CreatePartyCommandHandler(IAggregateRepository<Party> repository,
                                        ILogger<CreatePartyCommandHandler> logger) : ICreatePartyCommandHandler
 {
     private static readonly Action<ILogger, string, string, Exception?> LogHandlingCreatePartyCommand =
