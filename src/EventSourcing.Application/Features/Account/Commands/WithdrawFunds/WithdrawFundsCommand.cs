@@ -1,5 +1,6 @@
 namespace EventSourcing.Application.Features.Account.Commands.WithdrawFunds;
 
+using EventSourcing.Application.SeedWork;
 using EventSourcing.Domain.Aggregates.AccountAggregate;
 using EventSourcing.Domain.Seedwork;
 using Microsoft.Extensions.Logging;
@@ -8,9 +9,8 @@ using System.Threading.Tasks;
 
 public record WithdrawFundsCommand(Guid AccountId, decimal Amount, string MerchantName, VendorType MerchantType);
 
-public interface IWithdrawFundsCommandHandler
+public interface IWithdrawFundsCommandHandler : ICommandHandler<WithdrawFundsCommand, Unit>
 {
-    public Task<Result> Handle(WithdrawFundsCommand command, CancellationToken cancellationToken = default);
 }
 
 public class WithdrawFundsCommandHandler(IAggregateRepository<Account> repository, ILogger<WithdrawFundsCommandHandler> logger) : IWithdrawFundsCommandHandler
@@ -39,7 +39,7 @@ public class WithdrawFundsCommandHandler(IAggregateRepository<Account> repositor
             new EventId(4, "FundsWithdrawn"),
             "Funds withdrawn from account with ID: {AccountId}");
 
-    public async Task<Result> Handle(WithdrawFundsCommand command, CancellationToken cancellationToken = default)
+    public async Task<Result<Unit>> Handle(WithdrawFundsCommand command, CancellationToken cancellationToken = default)
     {
         LogHandlingWithdrawFundsCommand(logger, command.AccountId, command.Amount, null);
 
@@ -47,14 +47,14 @@ public class WithdrawFundsCommandHandler(IAggregateRepository<Account> repositor
         if (account is null)
         {
             LogAccountNotFound(logger, command.AccountId, null);
-            return Result.Fail("Account with ID " + command.AccountId + " not found.");
+            return Result.Fail<Unit>("Account with ID " + command.AccountId + " not found.");
         }
 
         var amountResult = Money.Create(command.Amount);
         if (amountResult.IsFailure)
         {
             LogWithdrawFundsError(logger, amountResult.Error, null);
-            return Result.Fail(amountResult.Error);
+            return Result.Fail<Unit>(amountResult.Error);
         }
 
         var merchant = new Merchant(command.MerchantName, command.MerchantType);
@@ -63,13 +63,13 @@ public class WithdrawFundsCommandHandler(IAggregateRepository<Account> repositor
         if (result.IsFailure)
         {
             LogWithdrawFundsError(logger, result.Error, null);
-            return result;
+            return Result.Fail<Unit>(result.Error);
         }
 
         await repository.SaveAsync(account, cancellationToken);
 
         LogFundsWithdrawn(logger, account.Id, null);
 
-        return Result.Ok();
+        return Result.Ok(Unit.Value);
     }
 }

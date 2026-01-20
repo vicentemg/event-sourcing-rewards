@@ -20,11 +20,14 @@
   <ItemGroup Condition="$(MSBuildProjectName.EndsWith('Application'))">
     <ProjectReference Include="$(DomainPath)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Scrutor" />
   </ItemGroup>
 
   <ItemGroup Condition="$(MSBuildProjectName.EndsWith('Infrastructure'))">
     <ProjectReference Include="$(ApplicationPath)" />
     <PackageReference Include="Marten"/>
+    <PackageReference Include="Polly" />
+    <PackageReference Include="Scrutor" />
   </ItemGroup>
 
   <ItemGroup Condition="$(MSBuildProjectName.EndsWith('Tests'))">

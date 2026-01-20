@@ -4,15 +4,14 @@ using EventSourcing.Domain.Aggregates.PartyAggregate;
 using EventSourcing.Domain.Seedwork;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Threading.Tasks;
+using EventSourcing.Application.SeedWork;
 
 public record PartyDto(Guid Id, string Name, string Email);
 
 public record GetPartyQuery(Guid PartyId);
 
-public interface IGetPartyQueryHandler
+public interface IGetPartyQueryHandler : IQueryHandler<GetPartyQuery, PartyDto>
 {
-    public Task<Result<PartyDto>> Handle(GetPartyQuery query, CancellationToken cancellationToken);
 }
 
 public class GetPartyQueryHandler(IAggregateRepository<Party> repository, ILogger<GetPartyQueryHandler> logger) : IGetPartyQueryHandler

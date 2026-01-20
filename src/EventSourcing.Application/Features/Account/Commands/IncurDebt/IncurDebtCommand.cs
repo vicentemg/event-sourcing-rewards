@@ -1,5 +1,6 @@
 namespace EventSourcing.Application.Features.Account.Commands.IncurDebt;
 
+using EventSourcing.Application.SeedWork;
 using EventSourcing.Domain.Aggregates.AccountAggregate;
 using EventSourcing.Domain.Seedwork;
 using Microsoft.Extensions.Logging;
@@ -8,9 +9,8 @@ using System.Threading.Tasks;
 
 public record IncurDebtCommand(Guid AccountId, decimal Amount, string MerchantName, VendorType MerchantType);
 
-public interface IIncurDebtCommandHandler
+public interface IIncurDebtCommandHandler : ICommandHandler<IncurDebtCommand, Unit>
 {
-    public Task<Result> Handle(IncurDebtCommand command, CancellationToken cancellationToken = default);
 }
 
 public class IncurDebtCommandHandler(IAggregateRepository<Account> repository, ILogger<IncurDebtCommandHandler> logger) : IIncurDebtCommandHandler
@@ -39,7 +39,7 @@ public class IncurDebtCommandHandler(IAggregateRepository<Account> repository, I
             new EventId(4, "DebtIncurred"),
             "Debt incurred for account with ID: {AccountId}");
 
-    public async Task<Result> Handle(IncurDebtCommand command, CancellationToken cancellationToken = default)
+    public async Task<Result<Unit>> Handle(IncurDebtCommand command, CancellationToken cancellationToken = default)
     {
         LogHandlingIncurDebtCommand(logger, command.AccountId, command.Amount, null);
 
@@ -47,14 +47,14 @@ public class IncurDebtCommandHandler(IAggregateRepository<Account> repository, I
         if (account is null)
         {
             LogAccountNotFound(logger, command.AccountId, null);
-            return Result.Fail("Account with ID " + command.AccountId + " not found.");
+            return Result.Fail<Unit>("Account with ID " + command.AccountId + " not found.");
         }
 
         var amountResult = Money.Create(command.Amount);
         if (amountResult.IsFailure)
         {
             LogIncurDebtError(logger, amountResult.Error, null);
-            return Result.Fail(amountResult.Error);
+            return Result.Fail<Unit>(amountResult.Error);
         }
 
         var merchant = new Merchant(command.MerchantName, command.MerchantType);
@@ -63,13 +63,13 @@ public class IncurDebtCommandHandler(IAggregateRepository<Account> repository, I
         if (result.IsFailure)
         {
             LogIncurDebtError(logger, result.Error, null);
-            return result;
+            return Result.Fail<Unit>(result.Error);
         }
 
         await repository.SaveAsync(account, cancellationToken);
 
         LogDebtIncurred(logger, account.Id, null);
 
-        return Result.Ok();
+        return Result.Ok(Unit.Value);
     }
 }

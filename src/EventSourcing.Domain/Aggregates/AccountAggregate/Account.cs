@@ -5,19 +5,19 @@ using EventSourcing.Domain.Seedwork;
 
 public class Account : AggregateRoot
 {
-    public Account() { }
+    internal Account() { }
     public Account(Guid id)
     {
         Id = id;
     }
 
     public Guid PartyId { get; private set; }
-    public Money Balance { get; private set; }
-    public Money Debt { get; private set; }
-    public AccountStatus Status { get; private set; }
+    public Money Balance { get; private set; } = default!;
+    public Money Debt { get; private set; } = default!;
+    public AccountStatus Status { get; private set; } = default!;
 
 
-    public static Result<Account> Create(Guid accountId, Guid partyId, Money initialBalance)
+    public static Result<Account> New(Guid accountId, Guid partyId, Money initialBalance)
     {
         var account = new Account(accountId)
         {
@@ -73,7 +73,7 @@ public class Account : AggregateRoot
         return Result.Ok();
     }
 
-    internal void Apply(AccountCreated e)
+    public void Apply(AccountCreated e)
     {
         Id = e.AccountId;
         PartyId = e.PartyId;
@@ -82,17 +82,17 @@ public class Account : AggregateRoot
         Status = AccountStatus.Active;
     }
 
-    internal void Apply(FundsDeposited e)
+    public void Apply(FundsDeposited e)
     {
         Balance += e.Amount;
     }
 
-    internal void Apply(FundsWithdrawn e)
+    public void Apply(FundsWithdrawn e)
     {
         Balance -= e.Amount;
     }
 
-    internal void Apply(DebtIncurred e)
+    public void Apply(DebtIncurred e)
     {
         Debt += e.Amount;
     }

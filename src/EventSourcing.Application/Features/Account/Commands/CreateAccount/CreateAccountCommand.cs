@@ -57,7 +57,7 @@ public class CreateAccountCommandHandler(
             return Result.Fail<Guid>(initialBalanceResult.Error);
         }
 
-        var result = Account.Create(command.Id, command.PartyId, initialBalanceResult.Value);
+        var result = Account.New(command.Id, command.PartyId, initialBalanceResult.Value);
 
         if (result.IsFailure)
         {

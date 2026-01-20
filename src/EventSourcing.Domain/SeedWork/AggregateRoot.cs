@@ -13,7 +13,7 @@ public abstract class AggregateRoot : IAggregateRoot
 
     public Guid Id { get; protected set; }
 
-    public int Version { get; protected set; }
+    public long Version { get; set; }
 
     public object[] GetUncommittedEvents()
     {

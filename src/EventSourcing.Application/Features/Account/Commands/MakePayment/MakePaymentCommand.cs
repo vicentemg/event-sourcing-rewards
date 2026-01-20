@@ -1,5 +1,6 @@
 namespace EventSourcing.Application.Features.Account.Commands.MakePayment;
 
+using EventSourcing.Application.SeedWork;
 using EventSourcing.Domain.Aggregates.AccountAggregate;
 using EventSourcing.Domain.Seedwork;
 using Microsoft.Extensions.Logging;
@@ -8,9 +9,8 @@ using System.Threading.Tasks;
 
 public record MakePaymentCommand(Guid AccountId, decimal Amount, string MerchantName, VendorType MerchantType);
 
-public interface IMakePaymentCommandHandler
+public interface IMakePaymentCommandHandler : ICommandHandler<MakePaymentCommand, Unit>
 {
-    public Task<Result> Handle(MakePaymentCommand command, CancellationToken cancellationToken = default);
 }
 
 public class MakePaymentCommandHandler(IAggregateRepository<Account> repository, ILogger<MakePaymentCommandHandler> logger) : IMakePaymentCommandHandler
@@ -39,15 +39,15 @@ public class MakePaymentCommandHandler(IAggregateRepository<Account> repository,
             new EventId(4, "PaymentMade"),
             "Payment made for account with ID: {AccountId}");
 
-    public async Task<Result> Handle(MakePaymentCommand command, CancellationToken cancellationToken = default)
+    public async Task<Result<Unit>> Handle(MakePaymentCommand command, CancellationToken cancellationToken = default)
     {
         LogHandlingMakePaymentCommand(logger, command.AccountId, command.Amount, null);
 
-        var accountResult = await this.GetAccountAsync(command.AccountId, cancellationToken);
+        var accountResult = await GetAccountAsync(command.AccountId, cancellationToken);
 
         if (accountResult.IsFailure)
         {
-            return Result.Fail(accountResult.Error);
+            return Result.Fail<Unit>(accountResult.Error);
         }
 
         var account = accountResult.Value;
@@ -56,7 +56,7 @@ public class MakePaymentCommandHandler(IAggregateRepository<Account> repository,
         if (amountResult.IsFailure)
         {
             LogMakePaymentError(logger, amountResult.Error, null);
-            return Result.Fail(amountResult.Error);
+            return Result.Fail<Unit>(amountResult.Error);
         }
         var paymentAmount = amountResult.Value;
 
@@ -66,14 +66,14 @@ public class MakePaymentCommandHandler(IAggregateRepository<Account> repository,
         if (paymentResult.IsFailure)
         {
             LogMakePaymentError(logger, paymentResult.Error, null);
-            return paymentResult;
+            return Result.Fail<Unit>(paymentResult.Error);
         }
 
         await repository.SaveAsync(account, cancellationToken);
 
         LogPaymentMade(logger, account.Id, null);
 
-        return Result.Ok();
+        return Result.Ok(Unit.Value);
     }
 
     private async Task<Result<Account>> GetAccountAsync(Guid accountId, CancellationToken cancellationToken)

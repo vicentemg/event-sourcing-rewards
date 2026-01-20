@@ -1,13 +1,14 @@
 namespace EventSourcing.Infrastructure.Marten.Events;
 
-using global::Marten;
+using EventSourcing.Infrastructure.Marten.Configuration;
 using EventSourcing.Domain.Aggregates.AccountAggregate.Events;
+using global::Marten;
 
-public class AccountEventsRegistration : IMartenEventTypeRegistration
+public class AccountEventsConfiguration : IEventTypeConfiguration
 {
-    public void Register(StoreOptions options)
+    public void Configure(StoreOptions options)
     {
-        options.Events
+        _ = options.Events
             .AddEventType<AccountCreated>()
             .AddEventType<FundsDeposited>()
             .AddEventType<FundsWithdrawn>()

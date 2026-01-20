@@ -33,9 +33,9 @@ public static class PartyEndpoints
         return Results.Ok(parties.Value);
     }
 
-    internal static async Task<IResult> CreatePartyAsync(CreatePartyCommand command, [FromServices] ICreatePartyCommandHandler handler)
+    internal static async Task<IResult> CreatePartyAsync(CreatePartyCommand command, [FromServices] ICreatePartyCommandHandler handler, CancellationToken cancellationToken)
     {
-        var result = await handler.Handle(command);
+        var result = await handler.Handle(command, cancellationToken);
 
         if (result.IsFailure)
         {

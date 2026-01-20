@@ -4,12 +4,12 @@ using EventSourcing.Domain.Seedwork;
 using EventSourcing.Domain.Aggregates.PartyAggregate;
 using System;
 using Microsoft.Extensions.Logging;
+using EventSourcing.Application.SeedWork;
 
 public record CreatePartyCommand(string Name, string Email);
 
-public interface ICreatePartyCommandHandler
+public interface ICreatePartyCommandHandler : ICommandHandler<CreatePartyCommand, Guid>
 {
-    public Task<Result<Guid>> Handle(CreatePartyCommand command, CancellationToken cancellationToken = default);
 }
 
 public class CreatePartyCommandHandler(IAggregateRepository<Party> repository,

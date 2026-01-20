@@ -4,20 +4,22 @@ using global::Marten;
 using System;
 using System.Linq;
 
+using EventSourcing.Infrastructure.Marten.Configuration;
+
 public static class EventTypesExtensions
 {
     public static StoreOptions AddMartenEventTypes(this StoreOptions options)
     {
-        var registrationType = typeof(IMartenEventTypeRegistration);
-        var registrations = typeof(EventTypesExtensions).Assembly
+        var configurationType = typeof(IEventTypeConfiguration);
+        var configurations = typeof(EventTypesExtensions).Assembly
             .GetTypes()
-            .Where(t => registrationType.IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract)
-            .Select(t => Activator.CreateInstance(t) as IMartenEventTypeRegistration)
+            .Where(t => configurationType.IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract)
+            .Select(t => Activator.CreateInstance(t) as IEventTypeConfiguration)
             .Where(r => r != null);
 
-        foreach (var registration in registrations)
+        foreach (var config in configurations)
         {
-            registration!.Register(options);
+            config!.Configure(options);
         }
 
         return options;

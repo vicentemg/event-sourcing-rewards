@@ -1,16 +1,17 @@
 namespace EventSourcing.WebApi.Endpoints;
 
 using System.Threading.Tasks;
-using EventSourcing.Application.Features.Account.Queries.GetAccount;
+using EventSourcing.Application.SeedWork;
+using AccountResponse = Application.Features.Account.Queries.GetAccount.Account;
 using EventSourcing.Application.Features.Account.Queries.GetAccounts;
+using EventSourcing.Application.Features.Account.Queries.GetAccount;
 using EventSourcing.Domain.Aggregates.AccountAggregate;
-using EventSourcing.WebApi.Endpoints.Contracts.Responses;
 using Microsoft.AspNetCore.Mvc;
 using EventSourcing.Application.Features.Account.Commands.CreateAccount;
-using EventSourcing.Application.Features.Account.Commands.DepositFunds;
 using EventSourcing.Application.Features.Account.Commands.IncurDebt;
 using EventSourcing.Application.Features.Account.Commands.MakePayment;
 using EventSourcing.Application.Features.Account.Commands.WithdrawFunds;
+using EventSourcing.Application.Features.Account.Commands.DepositFounds;
 
 public static class AccountEndpoints
 {
@@ -19,36 +20,43 @@ public static class AccountEndpoints
         _ = app
         .MapGet("/accounts", GetAccountsAsync)
         .WithName("GetAccounts")
+        .WithDescription("Get all accounts")
         .Produces<AccountResponse[]>(StatusCodes.Status200OK);
 
         _ = app
         .MapGet("/accounts/{id}", GetAccountByIdAsync)
         .WithName("GetAccount")
+        .WithDescription("Get account by id")
         .Produces<AccountResponse>(StatusCodes.Status200OK);
 
         _ = app
         .MapPost("/accounts", CreateAccountAsync)
         .WithName("CreateAccount")
+        .WithDescription("Create a new account")
         .Produces(StatusCodes.Status201Created);
 
         _ = app
         .MapPost("/accounts/{id}/deposit", DepositFundsAsync)
         .WithName("DepositFunds")
+        .WithDescription("Deposit funds into an account")
         .Produces(StatusCodes.Status200OK);
 
         _ = app
         .MapPost("/accounts/{id}/withdraw", WithdrawFundsAsync)
         .WithName("WithdrawFunds")
+        .WithDescription("Withdraw funds from an account")
         .Produces(StatusCodes.Status200OK);
 
         _ = app
         .MapPost("/accounts/{id}/incur-debt", IncurDebtAsync)
         .WithName("IncurDebt")
+        .WithDescription("Incur debt on an account")
         .Produces(StatusCodes.Status200OK);
 
         _ = app
         .MapPost("/accounts/{id}/payment", MakePaymentAsync)
         .WithName("MakePayment")
+        .WithDescription("Make a payment on an account")
         .Produces(StatusCodes.Status200OK);
     }
 
@@ -61,7 +69,7 @@ public static class AccountEndpoints
             return Results.NotFound(result.Error);
         }
 
-        var response = result.Value.Select(a => (AccountResponse)a).ToList();
+        var response = result.Value.Select(account => account).ToList();
 
         return Results.Ok(response);
     }
@@ -75,13 +83,13 @@ public static class AccountEndpoints
             return Results.NotFound(result.Error);
         }
 
-        return Results.Ok((AccountResponse)result.Value);
+        return Results.Ok(result.Value);
     }
 
-    internal static async Task<IResult> CreateAccountAsync([FromBody] CreateAccountRequest request, [FromServices] ICreateAccountCommandHandler handler)
+    internal static async Task<IResult> CreateAccountAsync([FromBody] CreateAccountRequest request, [FromServices] ICommandHandler<CreateAccountCommand, Guid> handler, CancellationToken cancellationToken)
     {
         var command = new CreateAccountCommand(Guid.NewGuid(), request.PartyId, request.InitialBalance);
-        var result = await handler.Handle(command);
+        var result = await handler.Handle(command, cancellationToken);
 
         if (result.IsFailure)
         {
@@ -94,7 +102,7 @@ public static class AccountEndpoints
     internal static async Task<IResult> DepositFundsAsync(Guid id, [FromBody] DepositFundsRequest request, [FromServices] IDepositFundsCommandHandler handler)
     {
         var command = new DepositFundsCommand(id, request.Amount, request.MerchantName, request.MerchantType);
-        var result = await handler.Handle(command);
+        var result = await handler.Handle(command, CancellationToken.None);
 
         if (result.IsFailure)
         {
@@ -107,7 +115,7 @@ public static class AccountEndpoints
     internal static async Task<IResult> WithdrawFundsAsync(Guid id, [FromBody] WithdrawFundsRequest request, [FromServices] IWithdrawFundsCommandHandler handler)
     {
         var command = new WithdrawFundsCommand(id, request.Amount, request.MerchantName, request.MerchantType);
-        var result = await handler.Handle(command);
+        var result = await handler.Handle(command, CancellationToken.None);
 
         if (result.IsFailure)
         {
@@ -120,7 +128,7 @@ public static class AccountEndpoints
     internal static async Task<IResult> IncurDebtAsync(Guid id, [FromBody] IncurDebtRequest request, [FromServices] IIncurDebtCommandHandler handler)
     {
         var command = new IncurDebtCommand(id, request.Amount, request.MerchantName, request.MerchantType);
-        var result = await handler.Handle(command);
+        var result = await handler.Handle(command, CancellationToken.None);
 
         if (result.IsFailure)
         {
@@ -133,7 +141,7 @@ public static class AccountEndpoints
     internal static async Task<IResult> MakePaymentAsync(Guid id, [FromBody] MakePaymentRequest request, [FromServices] IMakePaymentCommandHandler handler)
     {
         var command = new MakePaymentCommand(id, request.Amount, request.MerchantName, request.MerchantType);
-        var result = await handler.Handle(command);
+        var result = await handler.Handle(command, CancellationToken.None);
 
         if (result.IsFailure)
         {

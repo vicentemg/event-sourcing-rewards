@@ -1,19 +1,19 @@
 namespace EventSourcing.Infrastructure.Marten;
 
 using Domain.Seedwork;
-using Repositories;
 using global::Marten;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using EventSourcing.Infrastructure.Marten.Projections;
+using EventSourcing.Infrastructure.Marten.Configuration;
 using EventSourcing.Infrastructure.Marten.Events;
+using EventSourcing.Infrastructure.Marten.Repositories;
+using JasperFx.Events.Daemon;
 
 public static class MartenRegistry
 {
     public static IServiceCollection RegisterMarten(this IServiceCollection services, IConfiguration configuration)
     {
         _ = services
-            .AddScoped(typeof(IAggregateRepository<>), typeof(AggregateRepository<>))
             .AddMarten(opts =>
             {
                 var connectionString = configuration.GetConnectionString("postgres")!;
@@ -23,7 +23,8 @@ public static class MartenRegistry
                     .AddMartenEventTypes()
                     .AddMartenProjections();
 
-            }).UseLightweightSessions();
+            })
+            .AddAsyncDaemon(DaemonMode.Solo);
 
         return services;
     }

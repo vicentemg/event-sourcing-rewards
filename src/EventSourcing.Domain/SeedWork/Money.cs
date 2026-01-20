@@ -19,8 +19,18 @@ public record Money
         return Result.Ok(new Money(amount));
     }
 
-    public static implicit operator decimal(Money money) => money.Amount;
+    public static implicit operator decimal(Money money)
+    {
+        return money.Amount;
+    }
 
-    public static Money operator +(Money a, Money b) => new(a.Amount + b.Amount);
-    public static Money operator -(Money a, Money b) => new(a.Amount - b.Amount);
+    public static Money operator +(Money a, Money b)
+    {
+        return new(a.Amount + b.Amount);
+    }
+
+    public static Money operator -(Money a, Money b)
+    {
+        return new(a.Amount - b.Amount);
+    }
 }
