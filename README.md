@@ -3,6 +3,9 @@
 ## Overview
 This project is a Proof of Concept (PoC) designed to demonstrate the implementation of the **Event Sourcing** pattern in a modern .NET environment. It illustrates how to manage application state through an immutable sequence of events rather than just storing the current state.
 
+### Template Usage
+This repository is configured as a **GitHub Template**, allowing you to quickly bootstrap new projects with this architecture. Simply click the **"Use this template"** button to generate a new repository pre-populated with this project's structure and code.
+
 ## Architecture and Design
 The project follows **Clean Architecture** principles and **Domain-Driven Design (DDD)**, structuring the solution in concentric layers to ensure separation of concerns and maintainability.
 
