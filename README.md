@@ -34,6 +34,13 @@ The source code is located in the `src/` directory and is divided into the follo
 - **Marten**: Library that enables using PostgreSQL as an Event Store and document database.
 - **PostgreSQL**: Relational database used for persistence infrastructure.
 
+### Implementation Details
+- **Aggregates**: Implemented in the Domain layer inheriting from `AggregateRoot`. They encapsulate business logic and ensure strict consistency boundaries.
+- **Projections**: configured in `Infrastructure/Marten/Projections`. They are implemented using Marten's `SingleStreamProjection` and are configured to run **asynchronously** (`ProjectionLifecycle.Async`) via the Async Daemon, ensuring eventually consistent read models.
+- **Repositories**: 
+  - `AggregateRepository`: Manages write operations using Marten's `IDocumentSession`. It handles optimistic concurrency checks and event stream appending.
+  - `ProjectionRepository`: Provides read-only access to the materialized views using Marten's `IQuerySession`.
+
 ## Main Aggregates
 The current domain models the following concepts:
 - **Party**: Represents a customer or entity that can own accounts.
