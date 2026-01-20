@@ -12,9 +12,9 @@ public class Account : AggregateRoot
     }
 
     public Guid PartyId { get; private set; }
-    public Money Balance { get; private set; } = default!;
-    public Money Debt { get; private set; } = default!;
-    public AccountStatus Status { get; private set; } = default!;
+    public Money Balance { get; private set; } = Money.Create(0);
+    public Money Debt { get; private set; } = Money.Create(0);
+    public AccountStatus Status { get; private set; } = AccountStatus.Active;
 
 
     public static Result<Account> New(Guid accountId, Guid partyId, Money initialBalance)

@@ -26,11 +26,35 @@ public record Money
 
     public static Money operator +(Money a, Money b)
     {
+        if (a is null && b is null)
+        {
+            return new Money(0);
+        }
+        if (a is null)
+        {
+            return new Money(b!.Amount);
+        }
+        if (b is null)
+        {
+            return new Money(a.Amount);
+        }
         return new(a.Amount + b.Amount);
     }
 
     public static Money operator -(Money a, Money b)
     {
+        if (a is null && b is null)
+        {
+            return new Money(0);
+        }
+        if (a is null)
+        {
+            return new Money(-b!.Amount);
+        }
+        if (b is null)
+        {
+            return new Money(a.Amount);
+        }
         return new(a.Amount - b.Amount);
     }
 }

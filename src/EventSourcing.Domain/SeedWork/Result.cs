@@ -44,7 +44,7 @@ public class Result<T> : Result
         Value = value;
     }
 
-    public static explicit operator T(Result<T> result)
+    public static implicit operator T(Result<T> result)
     {
         return result.Value;
     }

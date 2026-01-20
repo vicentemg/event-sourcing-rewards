@@ -2,8 +2,8 @@
 @randomId = {{$random.integer(1000, 9999)}}
 
 ###
-// Create a new party
-// @name createParty
+# Create a new party
+# @name createParty
 POST {{api_Host}}/parties
 Content-Type: application/json
 
@@ -15,9 +15,78 @@ Content-Type: application/json
 
 
 ###
-// Get a party by ID
-// @name getPartyById
+# Get a party by ID
+# @name getPartyById
 
 GET {{api_Host}}/parties/{{createParty.response.body.id}}
 Accept: application/json
 
+###
+# Get all accounts
+GET {{api_Host}}/accounts
+Accept: application/json
+
+###
+# Create a new account
+# @name createAccount
+POST {{api_Host}}/accounts
+Content-Type: application/json
+
+{
+    "partyId": "{{createParty.response.body.id}}",
+    "initialBalance": 1000
+}
+
+###
+# Get account by ID
+GET {{api_Host}}/accounts/{{createAccount.response.body.id}}
+Accept: application/json
+
+###
+# Get accounts by ID
+GET {{api_Host}}/accounts
+Accept: application/json
+
+###
+# Deposit funds
+POST {{api_Host}}/accounts/{{createAccount.response.body.id}}/deposit
+Content-Type: application/json
+
+{
+    "amount": 500,
+    "merchantName": "Salary",
+    "merchantType": 1
+}
+
+###
+# Withdraw funds
+POST {{api_Host}}/accounts/{{createAccount.response.body.id}}/withdraw
+Content-Type: application/json
+
+{
+    "amount": 100,
+    "merchantName": "ATM",
+    "merchantType": "Other"
+}
+
+###
+# Incur debt
+POST {{api_Host}}/accounts/{{createAccount.response.body.id}}/incur-debt
+Content-Type: application/json
+
+{
+    "amount": 50,
+    "merchantName": "Credit Card",
+    "merchantType": "Electronics"
+}
+
+###
+# Make payment
+POST {{api_Host}}/accounts/{{createAccount.response.body.id}}/payment
+Content-Type: application/json
+
+{
+    "amount": 50,
+    "merchantName": "Bill Payment",
+    "merchantType": "Other"
+}
